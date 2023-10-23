@@ -101,7 +101,7 @@ def test_file_edits_influence_order(create_prepared_seagoat, repo):
     seagoat.analyze_codebase()
     results = seagoat.get_results()
 
-    assert [result.path for result in results][0:2] == [
+    assert [result.path for result in results][:2] == [
         "file_many_edits.md",
         "file_few_edits.md",
     ]

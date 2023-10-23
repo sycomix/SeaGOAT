@@ -30,19 +30,17 @@ class File:
 {commit_messages}"""
 
     def _get_file_lines(self) -> Dict[int, str]:
-        lines = {
+        return {
             (i + 1): line
             for i, line in enumerate(
                 read_file_with_correct_encoding(self.absolute_path).splitlines()
             )
         }
 
-        return lines
-
     def _format_chunk_summary(self, relevant_lines: List[str]):
         truncated_lines = [line[:100] for line in relevant_lines]
         chunk = "\n".join(truncated_lines)
-        chunk = chunk + self.get_metadata()
+        chunk += self.get_metadata()
 
         return chunk
 

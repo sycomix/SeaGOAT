@@ -170,6 +170,6 @@ async def test_ripgrep_respects_custom_ignore_patterns(repo, create_config_file)
     seagoat.query(my_query)
     await seagoat.fetch()
 
-    results_files = set(result.path for result in seagoat.get_results())
+    results_files = {result.path for result in seagoat.get_results()}
     assert "history/files/events.txt" not in results_files
     assert "events.txt" in results_files

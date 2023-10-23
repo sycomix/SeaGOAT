@@ -106,7 +106,6 @@ def start_server(repo_path, custom_port=None):
 
 
 def get_server(repo_path, custom_port=None):
-    port = None
     try:
         server_info = get_server_info(repo_path)
         server_address = server_info["address"]
@@ -117,9 +116,7 @@ def get_server(repo_path, custom_port=None):
     except ServerDoesNotExist:
         pass
 
-    if custom_port is not None:
-        port = custom_port
-
+    port = custom_port if custom_port is not None else None
     os.environ["TOKENIZERS_PARALLELISM"] = "true"
 
     start_server(str(repo_path), custom_port=port)
@@ -181,11 +178,10 @@ def status(repo_path, use_json_format):
 
     if use_json_format:
         click.echo(json.dumps(status_info))
+    elif status_info["isRunning"]:
+        click.echo(f"Server is running at {status_info['url']}")
     else:
-        if status_info["isRunning"]:
-            click.echo(f"Server is running at {status_info['url']}")
-        else:
-            click.echo("Server is not running.")
+        click.echo("Server is not running.")
 
 
 @server.command()

@@ -46,7 +46,7 @@ async def test_gets_data_using_vector_embeddings(repo, snapshot):
     assert seagoat.get_results()[0].path == "file1.md"
 
     # Tests that results are grouped by file
-    assert len(set(result.path for result in seagoat.get_results())) == len(
+    assert len({result.path for result in seagoat.get_results()}) == len(
         list(seagoat.get_results())
     )
 
@@ -305,14 +305,17 @@ async def test_respects_limit_in_chromadb(repo):
     await seagoat.fetch(limit_clue=5)
 
     expected_files = {"devices.txt", "devices2.txt"}
-    results_files = set(result.path for result in seagoat.get_results())
+    results_files = {result.path for result in seagoat.get_results()}
 
     assert expected_files.issubset(results_files)
-    result_for_devices_txt = next(
-        (result for result in seagoat.get_results() if result.path == "devices.txt"),
+    if result_for_devices_txt := next(
+        (
+            result
+            for result in seagoat.get_results()
+            if result.path == "devices.txt"
+        ),
         None,
-    )
-    if result_for_devices_txt:
+    ):
         assert len(result_for_devices_txt.get_lines(my_query)) == 6
     else:
         raise AssertionError("File 'devices.txt' not found in results.")
@@ -365,6 +368,6 @@ async def test_custom_ignore_patterns(repo, create_config_file):
     seagoat.query(my_query)
     await seagoat.fetch(limit_clue=5)
 
-    results_files = set(result.path for result in seagoat.get_results())
+    results_files = {result.path for result in seagoat.get_results()}
 
     assert "foo/devices2.txt" not in results_files

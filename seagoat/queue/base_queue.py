@@ -43,9 +43,7 @@ class BaseQueue:
             kwargs={**kwargs, "__result_queue": result_queue},
         )
         self._task_queue.put(task)
-        if wait_for_result:
-            return result_queue.get()
-        return None
+        return result_queue.get() if wait_for_result else None
 
     def handle_maintenance(self, context):
         pass
@@ -59,8 +57,7 @@ class BaseQueue:
     def _handle_task(self, context, task: Task):
         logging.info("Handling task: %s", task.name)
         handler_name = f"handle_{task.name}"
-        handler = getattr(self, handler_name, None)
-        if handler:
+        if handler := getattr(self, handler_name, None):
             kwargs = dict(task.kwargs or {})
             result_queue = kwargs.pop("__result_queue", None)
             result = handler(context, *task.args, **kwargs)

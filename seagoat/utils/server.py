@@ -62,17 +62,16 @@ def update_server_info(
 def stop_server(repo_path: Union[str, Path]) -> None:
     servers_info = get_servers_info()
     repo_id = normalize_repo_path(repo_path)
-    if repo_id in servers_info:
-        server_info = servers_info[repo_id]
-        process = psutil.Process(server_info["pid"])
-
-        servers_info.pop(repo_id)
-        write_to_json_file(_get_server_data_file_path(), servers_info)
-
-        process.terminate()
-        process.wait()
-    else:
+    if repo_id not in servers_info:
         raise ServerDoesNotExist(f"Server for {repo_path} does not exist.")
+    server_info = servers_info[repo_id]
+    process = psutil.Process(server_info["pid"])
+
+    servers_info.pop(repo_id)
+    write_to_json_file(_get_server_data_file_path(), servers_info)
+
+    process.terminate()
+    process.wait()
 
 
 def get_server_info(repo_path: Union[str, Path]) -> ServerInfo:
@@ -82,8 +81,7 @@ def get_server_info(repo_path: Union[str, Path]) -> ServerInfo:
     if repo_id not in servers_info:
         raise ServerDoesNotExist(f"Server for {repo_path} does not exist.")
 
-    server_info = servers_info[repo_id]
-    return server_info
+    return servers_info[repo_id]
 
 
 def is_server_running(repo_path: Union[str, Path]) -> bool:

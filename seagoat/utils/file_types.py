@@ -37,7 +37,4 @@ def get_file_penalty_factor(path: Union[Path, str]) -> float:
     # Text file lines are penalized compared to code file lines as they
     # generally have more meaningful words, but the user might be more likely
     # to be looking for code than text.
-    if Path(path).suffix in TEXT_FILE_TYPES:
-        return 1.5
-
-    return 1.0
+    return 1.5 if Path(path).suffix in TEXT_FILE_TYPES else 1.0

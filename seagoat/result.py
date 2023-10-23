@@ -31,9 +31,7 @@ class ResultLine:
         terms = re.split(r"\s+", query)
         pattern = ".*".join(map(re.escape, terms))
 
-        if re.search(pattern, self.line_text, re.IGNORECASE):
-            return 1
-        return 0
+        return 1 if re.search(pattern, self.line_text, re.IGNORECASE) else 0
 
     def get_score(self, query: str) -> float:
         return self.vector_distance / (1 + self._get_number_of_exact_matches(query))
@@ -46,7 +44,7 @@ class ResultLine:
             "score": round(self.get_score(query), 4),
             "line": self.line,
             "lineText": self.line_text,
-            "resultTypes": list(sorted(set(str(t) for t in self.types))),
+            "resultTypes": list(sorted({str(t) for t in self.types})),
         }
 
 
@@ -115,12 +113,12 @@ class Result:
 
         return list(
             sorted(
-                set(
+                {
                     result_line.line
                     for result_line in self.lines.values()
                     if (result_line.get_score(query) <= best_score * 10)
                     or ResultLineType.CONTEXT in result_line.types
-                )
+                }
             )
         )
 

@@ -166,9 +166,9 @@ class MockRepo(Repo):
         commit_message,
         encoding="utf-8",
     ):
-        # Create parent directory if it doesn't exist:
-        parent_folder = os.path.dirname(os.path.join(self.working_dir, file_name))
-        if parent_folder:
+        if parent_folder := os.path.dirname(
+            os.path.join(self.working_dir, file_name)
+        ):
             os.makedirs(parent_folder, exist_ok=True)
 
         with open(
@@ -215,8 +215,7 @@ def generate_repo():
 
 @pytest.fixture
 def repo(generate_repo):
-    repo = generate_repo()
-    yield repo
+    yield generate_repo()
 
 
 @pytest.fixture(autouse=True)
@@ -436,8 +435,7 @@ def runner_with_error():
 
 @pytest.fixture
 def app(repo):
-    app = create_app(repo.working_dir)
-    yield app
+    yield create_app(repo.working_dir)
 
 
 @pytest.fixture

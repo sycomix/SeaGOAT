@@ -89,11 +89,10 @@ class Engine:
             source["cache_chunk"](chunk)
 
     def _is_file_ignored(self, path: str):
-        for pattern in self.config["server"]["ignorePatterns"]:
-            if Path(path).match(pattern):
-                return True
-
-        return False
+        return any(
+            Path(path).match(pattern)
+            for pattern in self.config["server"]["ignorePatterns"]
+        )
 
     def process_chunk(self, chunk):
         if chunk.chunk_id in self.cache.data["chunks_already_analyzed"]:
@@ -220,10 +219,7 @@ class Engine:
         def get_file_position(path: str):
             normalized_path = Path(path).as_posix()
 
-            if normalized_path not in top_files:
-                return 0
-
-            return top_files[normalized_path]
+            return 0 if normalized_path not in top_files else top_files[normalized_path]
 
         return list(
             sorted(
